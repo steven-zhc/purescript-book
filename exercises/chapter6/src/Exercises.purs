@@ -3,6 +3,10 @@ module Exercises where
 import Prelude
 
 -- chapter 6
+
+-- ==============================================================
+-- exercies 6.4
+-- 1 Define Show and Eq instances for Complex.
 newtype Complex = Complex
     { 
         real :: Number, 
@@ -20,6 +24,7 @@ newtype HashCode = HashCode Int
 instance showHashCode :: Show HashCode where
     show (HashCode h) = "(HashCode " <> show h <> ")"
 
+-- ==============================================================
 -- exercies 6.7
 -- 1
 data NonEmpty a = NonEmpty a (Array a)
@@ -46,4 +51,34 @@ instance appendNonEmpty :: (Semigroup a) => Semigroup (NonEmpty a) where
 instance mapNonEmpty :: Functor (NonEmpty) where
     map f (NonEmpty x xs) = NonEmpty (f x) (map f xs)
 
--- 4 
+-- 4 Given any type a with an instance of Ord, we can add a new “infinite” value which is greater than any other value:
+data Extended a = Finite a | Infinite
+
+-- Write an Ord instance for Extended a which reuses the Ord instance for a.
+instance compareExtended :: (Ord a) => Ord (Extended a) where
+    compare Infinite Infinite = EQ
+    compare Infinite (Finite a) = GT
+    compare (Finite a) Infinite = LT
+    compare (Finite x) (Finite y) = compare x y
+
+-- 5 (Difficult) Write a Foldable instance for NonEmpty. Hint: reuse the Foldable instance for arrays
+instance foldableNonEmpty :: Foldable NonEmpty where
+    foldl f acc (NonEmpty x []) = foldl f acc [x]
+    foldl f acc (NonEmpty _ xs) = foldl f acc xs
+
+    foldr f acc (NonEmpty x []) = foldr f acc [x]
+    foldr f acc (NonEmpty _ xs) = foldr f acc xs
+
+    foldMap f (NonEmpty x []) = foldMap f [x]
+    foldMap f (NonEmpty _ xs) = foldMap f xs
+
+-- 6 (Difficult) Given an type constructor f which defines an ordered container (and so has a Foldable instance), 
+-- we can create a new container type which includes an extra element at the front:
+
+data OneMore f a = OneMore a (f a)
+
+-- The container OneMore f is also has an ordering, 
+-- where the new element comes before any element of f. 
+-- Write a Foldable instance for OneMore f:
+
+-- instance foldableOneMore :: Foldable f => Foldable (OneMore f) where
