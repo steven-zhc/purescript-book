@@ -3,3 +3,4 @@
 !/.gitignore
 !/.purs-repl
 bower_components
+output/
